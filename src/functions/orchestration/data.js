@@ -1,5 +1,27 @@
 const axios = require('axios');
+const _ = require('lodash');
 let max_entries = 30;
+
+exports.getSpecies = async (identifier) => {
+  try {
+    identifier = identifier.toString();
+    let url;
+    // check if the identifier is a valid url for the appropriate type
+    if (
+      identifier.match(/^http.+species\/\d+\//)
+    ) {
+      url = identifier;
+    }
+    if (
+      identifier.match(/^\d+$/)
+    ) {
+      url = `https://swapi.dev/api/species/${identifier}/`
+    }
+    return await axios.get(url);
+  } catch (err) {
+    throw err;
+  };
+}
 
 exports.getCharacter = async (identifier) => {
   try {
@@ -20,10 +42,66 @@ exports.getCharacter = async (identifier) => {
   } catch (err) {
     throw err;
   };
-
 }
 
-exports.getStarShip = async (identifier) => {
+exports.getProcessedCharacter = async ( identifier ) => {
+  let character = await this.getCharacter( identifier );
+  let api_id;
+  let processedResource = _.cloneDeep( character );
+  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  processedResource.data.api_id = api_id;
+  processedResource.data.resourceType = 'character';
+  return processedResource ;
+}
+
+exports.getProcessedSpecies = async ( identifier ) => {
+  let species = await this.getSpecies( identifier );
+  let api_id;
+  let processedResource = _.cloneDeep( species );
+  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  processedResource.data.api_id = api_id;
+  processedResource.data.resourceType = 'species';
+  return processedResource ;
+}
+
+exports.getProcessedPlanet = async ( identifier ) => {
+  let planet = await this.getPlanet( identifier );
+  let api_id;
+  let processedResource = _.cloneDeep( planet );
+  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  processedResource.data.api_id = api_id;
+  processedResource.data.resourceType = 'planet';
+  return processedResource ;
+}
+
+exports.getProcessedStarship = async ( identifier ) => {
+  let starship = await this.getStarship( identifier );
+  let api_id;
+  let processedResource = _.cloneDeep( starship );
+  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  processedResource.data.api_id = api_id;
+  processedResource.data.resourceType = 'starship';
+  return processedResource ;
+}
+
+exports.getProcessedFilm = async ( identifier ) => {
+  let film = await this.getFilm( identifier );
+  let api_id;
+  let processedResource = _.cloneDeep( film );
+  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  processedResource.data.api_id = api_id;
+  processedResource.data.resourceType = 'film';
+  return processedResource ;
+}
+
+exports.getIdentifierFromUrl = ( url ) => {
+  let match = [];
+  match = url.match(/^http.+\/(people|starships|films|species|planets)\/(\d+)\//);
+  if(match.length <= 1){ throw new Error(`unable to extract identifier`)}
+  return match[2];
+}
+
+exports.getStarship = async (identifier) => {
   try {
     identifier = identifier.toString();
     let url;
@@ -31,9 +109,7 @@ exports.getStarShip = async (identifier) => {
     if (
       identifier.match(/^http.+starships\/\d+\//)
     ) {
-
       url = identifier;
-
     }
 
     if (
@@ -238,9 +314,20 @@ exports.getRandomData = async (type, limit) => {
   }
 };
 
+function validURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+
 exports.getResource = {
-  'character': this.getCharacter,
-  'starship': this.getStarShip,
-  'planet': this.getPlanet,
-  'film': this.getFilm
+  'character': this.getProcessedCharacter,
+  'starship': this.getProcessedStarship,
+  'planet': this.getProcessedPlanet,
+  'film': this.getProcessedFilm,
+  'species': this.getProcessedSpecies
 }

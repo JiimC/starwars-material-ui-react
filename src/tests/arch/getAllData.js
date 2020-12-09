@@ -1,6 +1,6 @@
 const mocha = require('mocha');
 const chai = require('chai');
-let data = require('../functions/orchestration/data');
+let data = require('../../functions/orchestration/data');
 let max_entries = 50;
 let results = [];
 let filmresults = [];

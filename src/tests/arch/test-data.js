@@ -1,7 +1,7 @@
 const mocha = require('mocha');
 const chai = require('chai');
 
-let data = require('../functions/orchestration/data');
+let data = require('../../functions/orchestration/data');
 let person = 1;
 let timeout = 60000;
 
