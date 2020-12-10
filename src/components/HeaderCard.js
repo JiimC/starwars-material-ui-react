@@ -34,6 +34,11 @@ export default function HeaderCard(props) {
     <Box width="100%">
       <Paper square>
         <Card className={classes.root} square>
+        <CardContent>
+            <Typography color="textPrimary" >
+              React application using data provided by the publicly available Star Wars API. Implementation of the prototype UI is using material-ui components.
+            </Typography>
+          </CardContent>
           <CardMedia
             component="img"
             alt="Star Wars"
@@ -42,11 +47,6 @@ export default function HeaderCard(props) {
             image="/images/header/1.jpg"
             title="Star Wars"
           />
-          <CardContent>
-            <Typography>
-              React application using data provided by the publicly available Star Wars API. Implementation of the prototype UI is using material-ui components.
-            </Typography>
-          </CardContent>
         </Card>
       </Paper>
     </Box>

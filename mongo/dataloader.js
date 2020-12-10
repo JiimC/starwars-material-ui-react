@@ -1,7 +1,7 @@
 const axios = require('axios');
 const _ = require('lodash');
 let max_entries = 30;
-let db_adapter = require('../data/data-adapter');
+let db_adapter = require('../src/functions/data/data-adapter');
 
 const datasource = process.env.SWAPI_DATA_SOURCE ? process.env.SWAPI_DATA_SOURCE : 'mongodb'; // web || mongodb
 

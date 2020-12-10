@@ -68,7 +68,7 @@ export default function StarWarsCard(props) {
           }
           title={props.data.cardTitle}
           //title="Paella"
-          subheader="September 14, 2016"
+          //subheader="September 14, 2016"
         />
         <CardMedia
           className={classes.media}

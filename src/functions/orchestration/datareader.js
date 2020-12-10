@@ -1,8 +1,7 @@
 const axios = require('axios');
 const _ = require('lodash');
-let max_entries = 30;
 
-const datasource = process.env.SWAPI_DATA_SOURCE ? process.env.SWAPI_DATA_SOURCE : 'web'; // web || mongodb
+let max_entries = 30;
 
 exports.getProcessedResource = async ( identifier, type ) => {
   //console.log( `getProcessedResource ${type} ${identifier}` );
@@ -45,189 +44,11 @@ exports.getGenericResource = async ( identifier, type ) => {
     ) {
       url = `https://swapi.dev/api/${type}/${identifier}/`
     }
-    //console.log( url );
     return await axios.get(url);
   } catch (err) {
     throw err;
   };
 }
-
-
-// exports.getProcessedCharacter = async ( identifier ) => {
-//   let character = await this.getResourceFromAdapter[ datasource ]['character']( identifier );
-//   let api_id;
-//   let processedResource = _.cloneDeep( character );
-//   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
-//   processedResource.data.api_id = api_id;
-//   processedResource.data.resourceType = 'character';
-//   return processedResource ;
-// }
-
-// exports.getProcessedSpecies = async ( identifier ) => {
-//   let species = await this.getResourceFromAdapter[ datasource ]['species']( identifier );
-//   let api_id;
-//   let processedResource = _.cloneDeep( species );
-//   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
-//   processedResource.data.api_id = api_id;
-//   processedResource.data.resourceType = 'species';
-//   return processedResource ;
-// }
-
-// exports.getProcessedPlanet = async ( identifier ) => {
-//   let planet = await this.getResourceFromAdapter[ datasource ]['planet']( identifier );
-//   let api_id;
-//   let processedResource = _.cloneDeep( planet );
-//   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
-//   processedResource.data.api_id = api_id;
-//   processedResource.data.resourceType = 'planet';
-//   return processedResource ;
-// }
-
-// exports.getProcessedStarship = async ( identifier ) => {
-//   let starship = await this.getResourceFromAdapter[ datasource ]['starship']( identifier );
-//   let api_id;
-//   let processedResource = _.cloneDeep( starship );
-//   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
-//   processedResource.data.api_id = api_id;
-//   processedResource.data.resourceType = 'starship';
-//   return processedResource ;
-// }
-
-// exports.getProcessedFilm = async ( identifier ) => {
-//   let film = await this.getResourceFromAdapter[ datasource ]['film']( identifier );
-//   let api_id;
-//   let processedResource = _.cloneDeep( film );
-//   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
-//   processedResource.data.api_id = api_id;
-//   processedResource.data.resourceType = 'film';
-//   return processedResource ;
-// }
-
-// exports.getIdentifierFromUrl = ( url ) => {
-//   let match = [];
-//   match = url.match(/^http.+\/(people|starships|films|species|planets)\/(\d+)\//);
-//   if(match.length <= 1){ throw new Error(`unable to extract identifier`)}
-//   return match[2];
-// }
-
-// exports.getSpecies = async (identifier) => {
-//   try {
-//     identifier = identifier.toString();
-//     let url;
-//     // check if the identifier is a valid url for the appropriate type
-//     if (
-//       identifier.match(/^http.+species\/\d+\//)
-//     ) {
-//       url = identifier;
-//     }
-//     if (
-//       identifier.match(/^\d+$/)
-//     ) {
-//       url = `https://swapi.dev/api/species/${identifier}/`
-//     }
-//     return await axios.get(url);
-//   } catch (err) {
-//     throw err;
-//   };
-// }
-
-// exports.getCharacter = async (identifier) => {
-//   try {
-//     identifier = identifier.toString();
-//     let url;
-//     // check if the identifier is a valid url for the appropriate type
-//     if (
-//       identifier.match(/^http.+people\/\d+\//)
-//     ) {
-//       url = identifier;
-//     }
-//     if (
-//       identifier.match(/^\d+$/)
-//     ) {
-//       url = `https://swapi.dev/api/people/${identifier}/`
-//     }
-//     return await axios.get(url);
-//   } catch (err) {
-//     throw err;
-//   };
-// }
-
-// exports.getStarship = async (identifier) => {
-//   try {
-//     identifier = identifier.toString();
-//     let url;
-//     // check if the identifier is a valid url for the appropriate type
-//     if (
-//       identifier.match(/^http.+starships\/\d+\//)
-//     ) {
-//       url = identifier;
-//     }
-
-//     if (
-//       identifier.match(/^\d+$/)
-//     ) {
-//       url = `https://swapi.dev/api/starships/${identifier}/`
-
-//     }
-
-//     return await axios.get(url);
-//   } catch (err) {
-//     throw err;
-//   };
-// }
-
-// exports.getFilm = async (identifier) => {
-//   try {
-//     identifier = identifier.toString();
-//     let url;
-//     // check if the identifier is a valid url for the appropriate type
-//     if (
-//       identifier.match(/^http.+films\/\d+\//)
-//     ) {
-
-//       url = identifier;
-
-//     }
-
-//     if (
-//       identifier.match(/^\d+$/)
-//     ) {
-//       url = `https://swapi.dev/api/films/${identifier}/`
-
-//     }
-
-//     return await axios.get(url);
-//   } catch (err) {
-//     throw err;
-//   };
-// }
-
-
-// exports.getPlanet = async (identifier) => {
-//   try {
-//     identifier = identifier.toString();
-//     let url;
-//     // check if the identifier is a valid url for the appropriate type
-//     if (
-//       identifier.match(/^http.+planets\/\d+\//)
-//     ) {
-
-//       url = identifier;
-
-//     }
-
-//     if (
-//       identifier.match(/^\d+$/)
-//     ) {
-//       url = `https://swapi.dev/api/planets/${identifier}/`
-
-//     }
-
-//     return await axios.get(url);
-//   } catch (err) {
-//     throw err;
-//   };
-// }
 
 const getRandomIndices = (limit, amount, lower_bound, upper_bound) => {
 
@@ -375,23 +196,4 @@ function validURL(str) {
     '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
     '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
   return !!pattern.test(str);
-}
-
-exports.getResource = {
-  'character': this.getProcessedCharacter,
-  'starship': this.getProcessedStarship,
-  'planet': this.getProcessedPlanet,
-  'film': this.getProcessedFilm,
-  'species': this.getProcessedSpecies
-}
-
-exports.getResourceFromAdapter = {
-  'web' : {
-    'character': this.getCharacter,
-    'starship': this.getStarship,
-    'planet': this.getPlanet,
-    'film': this.getFilm,
-    'species': this.getSpecies
-  }
-
 }

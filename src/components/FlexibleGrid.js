@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import StarWarsCard from './Card';
+import GalaxyCardDemo from './muiCard.js';
 import { getRandomData } from '../functions/orchestration/datareader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 //import Backdrop from '@material-ui/core/Backdrop';
@@ -39,7 +40,7 @@ export default function AutoGrid() {
   React.useEffect(() => {
     async function getData() {
       let map = ['film', 'character', 'species', 'starship', 'planet'];
-      let outcome = await getRandomData(value ? map[value] : 'character', 25);
+      let outcome = await getRandomData(value ? map[value] : 'character', 12);
       setResult(outcome);
       setLoading(false);
       return outcome;
@@ -82,7 +83,8 @@ export default function AutoGrid() {
                     result.map(i => {
                       return (
                         <Grid item xs>
-                          <StarWarsCard data={loading ? 'loading...' : i.data}></StarWarsCard>
+                          {/* <StarWarsCard data={loading ? 'loading...' : i.data}></StarWarsCard> */}
+                          <GalaxyCardDemo data={loading ? 'loading...' : i.data}></GalaxyCardDemo > 
                         </Grid>
                       );
                     })
