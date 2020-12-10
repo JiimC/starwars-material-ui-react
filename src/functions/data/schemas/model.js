@@ -1,8 +1,19 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
+exports.apimapModel = () => {
 
-exports.filmModel = ( mongoose ) => {
+  const apimapSchema = new Schema({
+    url: String,
+    refid: String
+  });
 
-  const { Schema } = mongoose;
+  const Apimap = mongoose.model( 'apimap', apimapSchema );
+
+  return Apimap;
+}
+
+exports.filmModel = () => {
 
   const filmSchema = new Schema({
     resourceType: String,
@@ -37,9 +48,7 @@ exports.filmModel = ( mongoose ) => {
 }
 
 
-exports.characterModel = ( mongoose ) => {
-
-  const { Schema } = mongoose;
+exports.characterModel = () => {
 
   const characterSchema = new Schema({
     resourceType: String,
@@ -67,9 +76,7 @@ exports.characterModel = ( mongoose ) => {
   return Character;
 }
 
-exports.planetModel = ( mongoose ) => {
-
-  const { Schema } = mongoose;
+exports.planetModel = () => {
 
   const planetSchema = new Schema({
     resourceType: String,
@@ -98,9 +105,7 @@ exports.planetModel = ( mongoose ) => {
   return planet;
 }
 
-exports.starshipModel = ( mongoose ) => {
-
-  const { Schema } = mongoose;
+exports.starshipModel = () => {
 
   const starshipSchema = new Schema({
     resourceType: String,
@@ -131,9 +136,7 @@ exports.starshipModel = ( mongoose ) => {
   return starship;
 }
 
-exports.speciesModel = ( mongoose ) => {
-
-  const { Schema } = mongoose;
+exports.speciesModel = () => {
 
   const speciesSchema = new Schema({
     resourceType: String,
@@ -169,5 +172,6 @@ exports.getModel = {
   'film' : this.filmModel,
   'planet' : this.planetModel,
   'starship' : this.starshipModel,
-  'species' : this.speciesModel
+  'species' : this.speciesModel,
+  'apimap' : this.apimapModel
 }

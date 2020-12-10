@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const models = require('./schemas/model');
 const _ = require('lodash');
 
-let model = {};
+exports.model = {};
 
-exports.createConnection = async () => {
+exports.createConnection = async ( mongoose ) => {
   try {
     await mongoose.connect('mongodb://root:example@localhost:27017/starwars', {
       useNewUrlParser: true,
@@ -18,6 +18,37 @@ exports.createConnection = async () => {
   }
 }
 
+// index
+
+exports.indexResource = async (resource) => {
+  let persisted = _.cloneDeep(resource);
+  let indexed;
+  let local_model;
+
+  if (!this.model['apimap']) {
+    this.model['apimap'] = models.getModel['apimap'](mongoose);
+  }
+
+  local_model = this.model['apimap'];
+
+  if (
+    persisted &&
+    persisted.url &&
+    persisted._id
+  ) {
+    let map = {
+      url: persisted.url,
+      refid: persisted['_id']
+    };
+    let doc = local_model(map);
+    await doc.save();
+  } else {
+    throw new Error(`Parameters not supplied, unable to index`);
+  }
+  return indexed;
+}
+
+
 // create
 
 exports.createResource = async (resource) => {
@@ -30,56 +61,62 @@ exports.createResource = async (resource) => {
     ) {
       throw new Error(`resourceType not supplied`);
     }
-    if( !model[resourceObj.resourceType] ){
-      model[resourceObj.resourceType] = models.getModel[resourceObj.resourceType](mongoose);
+    if (!this.model[resourceObj.resourceType]) {
+      this.model[resourceObj.resourceType] = models.getModel[resourceObj.resourceType](mongoose);
     }
-    local_model = model[resourceObj.resourceType];
+    local_model = this.model[resourceObj.resourceType];
     let doc = local_model(resourceObj);
     await doc.save();
-    console.log(`Created ${JSON.stringify( doc )}`);
+    console.log(`Created ${JSON.stringify(doc)}`);
+    await this.indexResource(doc);
     return doc;
   } catch (err) {
     throw (err);
   }
 }
 
-exports.createCharacter = async (mongoose, characterObj) => {
-  characterObj = characterObj ? characterObj : {
-    "api_id": '1',
-    "name": "Luke Skywalker",
-    "height": "172",
-    "mass": "77",
-    "hair_color": "blond",
-    "skin_color": "fair",
-    "eye_color": "blue",
-    "birth_year": "19BBY",
-    "gender": "male",
-    "homeworld": "http://swapi.dev/api/planets/1/",
-    "films": [
-      "http://swapi.dev/api/films/1/",
-      "http://swapi.dev/api/films/2/",
-      "http://swapi.dev/api/films/3/",
-      "http://swapi.dev/api/films/6/"
-    ],
-    "species": [],
-    "vehicles": [
-      "http://swapi.dev/api/vehicles/14/",
-      "http://swapi.dev/api/vehicles/30/"
-    ],
-    "starships": [
-      "http://swapi.dev/api/starships/12/",
-      "http://swapi.dev/api/starships/22/"
-    ],
-    "created": "2014-12-09T13:50:51.644000Z",
-    "edited": "2014-12-20T21:17:56.891000Z",
-    "url": "http://swapi.dev/api/people/1/"
-  };
-  let characterModel = models.characterModel(mongoose);
-  let characterDoc = new characterModel(characterObj);
-  await characterDoc.save();
+// search
+exports.findById = async (queryObj) => {
+  try {
+    let local_model;
+    let query = _.cloneDeep(queryObj);
+    if (
+      query &&
+      !query.resourceType
+    ) {
+      throw new Error(`resourceType not supplied for query`);
+    }
+    if (!this.model[query.resourceType]) {
+      this.model[query.resourceType] = models.getModel[query.resourceType](mongoose);
+    }
+    local_model = this.model[query.resourceType];
+    let results = await local_model.findOne(query.id).exec();
+    return results;
+  } catch (err) {
+    throw (err);
+  }
 }
 
-// read
+exports.findOne = async (queryObj) => {
+  try {
+    let local_model;
+    let query = _.cloneDeep(queryObj);
+    if (
+      query &&
+      !query.resourceType
+    ) {
+      throw new Error(`resourceType not supplied for query`);
+    }
+    if (!this.model[query.resourceType]) {
+      this.model[query.resourceType] = models.getModel[query.resourceType]();
+    }
+    local_model = this.model[query.resourceType];
+    let result = await local_model.findOne(query).exec();
+    return result;
+  } catch (err) {
+    throw (err);
+  }
+}
 
 // search
 
@@ -89,9 +126,10 @@ exports.createCharacter = async (mongoose, characterObj) => {
 
 // disconnect
 
-try {
-  this.createConnection()
-} catch (err) {
-  console.log(err);
-}
+
+this.createConnection( mongoose )
+  .catch(err => {
+    console.log(err)
+  })
+
 

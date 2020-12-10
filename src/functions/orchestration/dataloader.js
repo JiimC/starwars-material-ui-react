@@ -1,6 +1,9 @@
 const axios = require('axios');
 const _ = require('lodash');
 let max_entries = 30;
+let db_adapter = require('../data/data-adapter');
+
+const datasource = process.env.SWAPI_DATA_SOURCE ? process.env.SWAPI_DATA_SOURCE : 'mongodb'; // web || mongodb
 
 exports.getSpecies = async (identifier) => {
   try {
@@ -18,6 +21,19 @@ exports.getSpecies = async (identifier) => {
       url = `https://swapi.dev/api/species/${identifier}/`
     }
     return await axios.get(url);
+  } catch (err) {
+    throw err;
+  };
+}
+
+exports.db_getSpecies = async ( identifier ) => {
+  try {
+    identifier = identifier.toString();
+    let query = {
+      resourceType: "species",
+      api_id: identifier
+    }
+    return await db_adapter.findOne( query );
   } catch (err) {
     throw err;
   };
@@ -45,7 +61,7 @@ exports.getCharacter = async (identifier) => {
 }
 
 exports.getProcessedCharacter = async ( identifier ) => {
-  let character = await this.getCharacter( identifier );
+  let character = await this.getResourceFromAdapter[ datasource ]['character']( identifier );
   let api_id;
   let processedResource = _.cloneDeep( character );
   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
@@ -55,7 +71,7 @@ exports.getProcessedCharacter = async ( identifier ) => {
 }
 
 exports.getProcessedSpecies = async ( identifier ) => {
-  let species = await this.getSpecies( identifier );
+  let species = await this.getResourceFromAdapter[ datasource ]['species']( identifier );
   let api_id;
   let processedResource = _.cloneDeep( species );
   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
@@ -65,7 +81,7 @@ exports.getProcessedSpecies = async ( identifier ) => {
 }
 
 exports.getProcessedPlanet = async ( identifier ) => {
-  let planet = await this.getPlanet( identifier );
+  let planet = await this.getResourceFromAdapter[ datasource ]['planet']( identifier );
   let api_id;
   let processedResource = _.cloneDeep( planet );
   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
@@ -75,7 +91,7 @@ exports.getProcessedPlanet = async ( identifier ) => {
 }
 
 exports.getProcessedStarship = async ( identifier ) => {
-  let starship = await this.getStarship( identifier );
+  let starship = await this.getResourceFromAdapter[ datasource ]['starship']( identifier );
   let api_id;
   let processedResource = _.cloneDeep( starship );
   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
@@ -85,7 +101,7 @@ exports.getProcessedStarship = async ( identifier ) => {
 }
 
 exports.getProcessedFilm = async ( identifier ) => {
-  let film = await this.getFilm( identifier );
+  let film = await this.getResourceFromAdapter[ datasource ]['film']( identifier );
   let api_id;
   let processedResource = _.cloneDeep( film );
   api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
@@ -330,4 +346,21 @@ exports.getResource = {
   'planet': this.getProcessedPlanet,
   'film': this.getProcessedFilm,
   'species': this.getProcessedSpecies
+}
+
+exports.getResourceFromAdapter = {
+  'mongodb' : {
+    'character': this.db_getCharacter,
+    'starship': this.db_getStarship,
+    'planet': this.db_getPlanet,
+    'film': this.db_getFilm,
+    'species': this.db_getSpecies
+  },
+  'web' : {
+    'character': this.getCharacter,
+    'starship': this.getStarship,
+    'planet': this.getPlanet,
+    'film': this.getFilm,
+    'species': this.getSpecies
+  }
 }
