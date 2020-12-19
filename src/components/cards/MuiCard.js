@@ -1,18 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GoogleFontLoader from 'react-google-font-loader';
 import NoSsr from '@material-ui/core/NoSsr';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
+import CardActions from '@material-ui/core/CardActions';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CardContent from '@material-ui/core/CardContent';
+import Collapse from '@material-ui/core/Collapse';
+
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
+
 import {
   Info,
   InfoCaption,
   InfoSubtitle,
   InfoTitle,
 } from '@mui-treasury/components/info';
-import { useGalaxyInfoStyles } from './styles/info/galaxy';
-import { useCoverCardMediaStyles } from './styles/cardMedia/cover';
+import { useGalaxyInfoStyles } from '../styles/info/galaxy';
+import { useCoverCardMediaStyles } from '../styles/cardMedia/cover';
 
 var subtitleFamily = "'Spartan', sans-serif";
 var family = "'Montserrat', sans-serif";
@@ -20,7 +31,7 @@ var titleFontSize = '1.25rem';
 var subtitleFontSize = '1rem';
 var captionFontSize = '0.875rem';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     borderRadius: '1rem',
     boxShadow: 'none',
@@ -67,11 +78,25 @@ const useStyles = makeStyles(() => ({
     lineHeight: 1.4,
     letterSpacing: '1px',
     fontWeight: 200
-  }
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
+  },
 }));
 
 export const GalaxyCardDemo = React.memo(function GalaxyCard( props ) {
   const mediaStyles = useCoverCardMediaStyles({ bgPosition: 'top' });
+  const [expanded, setExpanded] = useState(false);
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
   const styles = useStyles();
   return (
     <>

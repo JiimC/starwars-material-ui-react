@@ -1,32 +1,43 @@
 const axios = require('axios');
 const _ = require('lodash');
 
+let data_source = process.env.DATA_SOURCE ? process.env.DATA_SOURCE : 'mongo';
+
 let max_entries = 30;
 
-exports.getProcessedResource = async ( identifier, type ) => {
-  //console.log( `getProcessedResource ${type} ${identifier}` );
+exports.getProcessedResource = async (identifier, type) => {
+  console.log(`getProcessedResource ${type} ${identifier}`);
   type = type ? type : 'character';
-  let resource = await this.getGenericResource( identifier, type );
+  let resource = await this.getGenericResource(identifier, type);
   //console.log( `${ resource.data.name || resource.data.title } ${type} ${identifier}` );
   let api_id;
-  let processedResource = _.cloneDeep( resource );
-  api_id = validURL( identifier ) ? this.getIdentifierFromUrl( identifier ) : identifier;
+  let processedResource = _.cloneDeep(resource);
+  api_id = validURL(identifier) ? this.getIdentifierFromUrl(identifier) : identifier;
   processedResource.data.api_id = api_id;
   processedResource.data.resourceType = type;
-  return processedResource ;
+  return processedResource;
 }
 
-exports.getGenericResource = async ( identifier, type ) => {
+exports.getGenericResource = async (identifier, type) => {
 
   let type_mapper = {
-    'character': 'people',
-    'film': 'films',
-    'planet': 'planets',
-    'starship': 'starships',
-    'species': 'species'
+    'web': {
+      'character': 'people',
+      'film': 'films',
+      'planet': 'planets',
+      'starship': 'starships',
+      'species': 'species'
+    },
+    'mongo': {
+      'character': 'character',
+      'film': 'film',
+      'planet': 'planet',
+      'starship': 'starship',
+      'species': 'species'
+    }
   };
 
-  type = ( !type || !type_mapper[type] ) ? 'people' : type_mapper[type];
+  type = (!type || !type_mapper[data_source][type]) ? 'people' : type_mapper[data_source][type];
 
   //console.log( `getGenericResource ${type} ${identifier}` );
   try {
@@ -42,7 +53,8 @@ exports.getGenericResource = async ( identifier, type ) => {
     if (
       identifier.match(/^\d+$/)
     ) {
-      url = `https://swapi.dev/api/${type}/${identifier}/`
+      //url = `https://swapi.dev/api/${type}/${identifier}/`
+      url = `http://localhost:8001/v1/api/mongo/${type}/${identifier}/`
     }
     return await axios.get(url);
   } catch (err) {
@@ -120,7 +132,7 @@ exports.typeMap = {
     name: 'name',
     secondary: [
       'gender'
-  ],
+    ],
     summary: [
       'height',
       'mass',
@@ -164,15 +176,15 @@ exports.getRandomData = async (type, limit) => {
   for (let i of ids) {
     try {
       //let result = await this.getResource[type](i);
-      let result = await this.getProcessedResource(i,type);
+      let result = await this.getProcessedResource(i, type);
       console.log(` ${result.data.name || result.data.title} ${i} `);
       result.data.id = i;
       result.data.imagePath = `/images/${type}/${i}.jpg`;
       result.data.cardTitle = result.data[this.typeMap[type]['name']];
-      result.data.secondaryText = this.typeMap[type]['secondary'].map( category =>{
+      result.data.secondaryText = this.typeMap[type]['secondary'].map(category => {
         return `${category}: ${result.data[category]}`;
       });
-      result.data.summaryText = this.typeMap[type]['summary'].map( category =>{
+      result.data.summaryText = this.typeMap[type]['summary'].map(category => {
         return `${category}: ${result.data[category]}`;
       });
       result.data.summary = Object.keys(result.data).map(key => {
@@ -189,11 +201,11 @@ exports.getRandomData = async (type, limit) => {
 };
 
 function validURL(str) {
-  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
   return !!pattern.test(str);
 }
