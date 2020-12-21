@@ -54,7 +54,7 @@ exports.getGenericResource = async (identifier, type) => {
       identifier.match(/^\d+$/)
     ) {
       //url = `https://swapi.dev/api/${type}/${identifier}/`
-      url = `http://localhost:8001/v1/api/mongo/${type}/${identifier}/`
+      url = `http://localhost:8001/v1/api/mongo/resource?type=${type}&id=${identifier}`
     }
     return await axios.get(url);
   } catch (err) {

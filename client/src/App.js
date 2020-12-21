@@ -5,7 +5,6 @@ import HeaderCard from './components/HeaderCard';
 import AutoGrid from './components/FlexibleGrid';
 import './App.css';
 
-
 function App() {
   return (
     <div className="App">
