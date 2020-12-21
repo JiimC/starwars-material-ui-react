@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  material-ui-react-express:
+    build: 
+      context: ../../
+      dockerfile: docker/api.dockerfile
+    volumes:
+      - ../../:/code
+    environment:
+      MDB_CONNECTION: mongodb://root:example@host.docker.internal:27017/starwars
+    ports:
+      - "8001:8001"
+      - "5858:5858"
+
+  material-ui-react:
+    build: 
+      context: ../../
+      dockerfile: docker/api.dockerfile
+    volumes:
+      - ../../client:/code
+    environment:
+      MDB_CONNECTION: mongodb://root:example@host.docker.internal:27017/starwars
+    ports:
+      - "8002:3000"
+      - "5859:5858"
+  
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+
+
+
+
+    
