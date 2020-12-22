@@ -149,7 +149,7 @@ exports.getCollectionCount = async ( queryObj ) => {
     }
     local_model = this.model[query.resourceType];
     let result = await local_model.countDocuments( { resourceType: query.resourceType } ).exec();
-    return { type: query.resourceType, count: result };
+    return ({resourceType: query.resourceType, count: result});
   } catch (err) {
     throw (err);
   }
