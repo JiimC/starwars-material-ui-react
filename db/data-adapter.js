@@ -134,6 +134,27 @@ exports.findOne = async (queryObj) => {
   }
 }
 
+exports.getCollectionCount = async ( queryObj ) => {
+  try {
+    let local_model;
+    let query = _.cloneDeep(queryObj);
+    if (
+      query &&
+      !query.resourceType
+    ) {
+      throw new Error(`resourceType not supplied for query`);
+    }
+    if (!this.model[query.resourceType]) {
+      this.model[query.resourceType] = models.getModel[query.resourceType]();
+    }
+    local_model = this.model[query.resourceType];
+    let result = await local_model.countDocuments( { resourceType: query.resourceType } ).exec();
+    return ({resourceType: query.resourceType, count: result});
+  } catch (err) {
+    throw (err);
+  }
+}
+
 // search
 
 // update

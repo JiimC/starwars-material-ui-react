@@ -10,7 +10,10 @@
 const router = require('express').Router();
 const controller = require('./controller');
 
-router.route('/:type/:id')
+router.route('/collection')
+  .get( controller.getResourceCount )
+
+router.route('/resource')
   .get( controller.getResourceByTypeAndId )
 
 module.exports = router;

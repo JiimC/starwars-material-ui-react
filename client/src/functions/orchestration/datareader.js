@@ -54,7 +54,7 @@ exports.getGenericResource = async (identifier, type) => {
       identifier.match(/^\d+$/)
     ) {
       //url = `https://swapi.dev/api/${type}/${identifier}/`
-      url = `http://localhost:8001/v1/api/mongo/${type}/${identifier}/`
+      url = `http://localhost:8001/v1/api/mongo/resource?type=${type}&id=${identifier}`
     }
     return await axios.get(url);
   } catch (err) {
@@ -175,6 +175,32 @@ exports.typeMap = {
     secondary: [],
     summary: []
   }
+}
+
+exports.getCollectionCount = async ( type ) => {
+  let type_mapper = {
+    'web': {
+      'character': 'people',
+      'film': 'films',
+      'planet': 'planets',
+      'starship': 'starships',
+      'species': 'species'
+    },
+    'mongo': {
+      'character': 'character',
+      'film': 'film',
+      'planet': 'planet',
+      'starship': 'starship',
+      'species': 'species'
+    }
+  };
+  //type = (!type || !type_mapper[data_source][type]) ? 'character' : type_mapper[data_source][type];
+  try {
+    let url = `http://localhost:8001/v1/api/mongo/collection?type=${type}`;
+    return await axios.get(url);
+  } catch (err) {
+    throw err;
+  };
 }
 
 exports.getRandomData = async (type, limit) => {
